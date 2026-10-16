@@ -140,7 +140,7 @@ try {
 
   // Where things live on other systems
   ok('Windows: Goose memory under AppData', where({ default: '.config/goose/memory', win32: 'AppData/Roaming/Block/goose/config/memory' }, { home: 'C:\\Users\\sam', platform: 'win32' }).replace(/\\/g, '/').endsWith('AppData/Roaming/Block/goose/config/memory'));
-  ok('Linux/Mac: Goose memory under ~/.config', where({ default: '.config/goose/memory', win32: 'x' }, { home: '/home/sam', platform: 'linux' }).endsWith('/.config/goose/memory') || !!process.env.XDG_CONFIG_HOME);
+  ok('Linux/Mac: Goose memory under ~/.config', where({ default: '.config/goose/memory', win32: 'x' }, { home: '/home/sam', platform: 'linux' }).replace(/\\/g, '/').endsWith('/.config/goose/memory') || !!process.env.XDG_CONFIG_HOME);
 } finally {
   app.kill(); mock.close(); fs.rmSync(H, { recursive: true, force: true });
   if (errText.trim()) console.log('server stderr:', errText.trim().slice(0, 400));
