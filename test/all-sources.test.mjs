@@ -62,7 +62,7 @@ const MOCK = `http://127.0.0.1:${mock.address().port}`;
 
 // ── the real app ──
 const PORT = 4600 + Math.floor(Math.random() * 300);
-const app = spawn(process.execPath, [fileURLToPath(new URL('../server.mjs', import.meta.url))], { env: { ...process.env, HOME: H, USERPROFILE: H, FMN_PORT: String(PORT), FMN_DATA_DIR: '', FMN_CLAUDE_DIR: '', CLAUDE_CONFIG_DIR: '' }, stdio: ['ignore', 'pipe', 'pipe'] });
+const app = spawn(process.execPath, [fileURLToPath(new URL('../server.mjs', import.meta.url))], { env: { ...process.env, HOME: H, USERPROFILE: H, XDG_CONFIG_HOME: path.join(H, '.config'), FMN_PORT: String(PORT), FMN_DATA_DIR: '', FMN_CLAUDE_DIR: '', CLAUDE_CONFIG_DIR: '' }, stdio: ['ignore', 'pipe', 'pipe'] });
 let errText = ''; app.stderr.on('data', (d) => { errText += d; });
 await new Promise((r) => app.stdout.once('data', r));
 const BASE = `http://127.0.0.1:${PORT}`;
