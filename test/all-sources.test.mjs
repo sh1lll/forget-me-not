@@ -17,7 +17,8 @@ const w = (rel, text) => { const p = path.join(H, rel); fs.mkdirSync(path.dirnam
 
 // ── files from many tools ──
 w('.claude/projects/-x/memory/MEMORY.md', '- [a](a.md)\n'); w('.claude/projects/-x/memory/a.md', '---\nname: a\ndescription: claude note\n---\nhi\n');
-w('.config/goose/memory/general.txt', 'likes tea'); w('.config/goose/.goosehints', 'Use British spelling.');
+const GOOSE = process.platform === 'win32' ? 'AppData/Roaming/Block/goose/config' : '.config/goose'; // where Goose keeps its config on each system
+w(`${GOOSE}/memory/general.txt`, 'likes tea'); w(`${GOOSE}/.goosehints`, 'Use British spelling.');
 w('.config/amp/AGENTS.md', 'Amp: be terse.'); w('.factory/AGENTS.md', 'Droid rules'); w('.kilocode/rules/a.md', '# Kilo rule');
 const proj = path.join(H, 'Projects', 'site'); fs.mkdirSync(path.join(proj, '.git'), { recursive: true });
 for (const [rel, t] of [['AGENTS.md', 'shared agents'], ['CRUSH.md', 'crush'], ['.junie/guidelines.md', 'junie'], ['.goosehints', 'project hints'], ['.trae/rules/r.md', 'trae'], ['.amazonq/rules/q.md', 'amazon q'], ['.idx/airules.md', 'firebase'], ['.aiassistant/rules/j.md', 'jb ai'], ['.voidrules', 'void'], ['knowledge.md', 'codebuff'], ['.openhands/microagents/repo.md', 'oh'], ['.augment-guidelines', 'augment'], ['.tabnine/guidelines/g.md', 'tabnine'], ['.sourcegraph/x.rule.md', 'cody']]) w(path.join('Projects', 'site', rel), t);
