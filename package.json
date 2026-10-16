@@ -101,7 +101,8 @@
     "nsis": {
       "oneClick": true,
       "perMachine": false,
-      "createDesktopShortcut": true
+      "createDesktopShortcut": true,
+      "buildUniversalInstaller": false
     },
     "linux": {
       "category": "Utility",
