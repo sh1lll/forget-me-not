@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Forget-Me-Not</title>
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<style>
+  :root {
+    --bg: #fafaf9; --panel: #ffffff; --hover: #f2f1ef; --line: #e7e5e2; --line2: #d6d3cf;
+    --text: #1c1b1a; --muted: #75716b; --faint: #a19d97;
+    --accent: #2f6fed; --accent-soft: #eaf1fe; --danger: #d92d20; --danger-soft: #fdecea; --warn: #b54708;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif; --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #151514; --panel: #1c1c1b; --hover: #262624; --line: #2c2b29; --line2: #3a3936; --text: #edebe8; --muted: #a5a19a; --faint: #78746e;
+      --accent: #7aa7ff; --accent-soft: #1f2a44; --danger: #ff7a6e; --danger-soft: #3b1f1c; --warn: #f5a35c; }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { background: var(--bg); color: var(--text); font: 14px/1.45 var(--sans); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0; padding: 0; }
+  input, textarea { font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--line2); border-radius: 8px; padding: 8px 10px; width: 100%; }
+  input:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+  svg { width: 16px; height: 16px; flex: none; }
+
+  .app { display: grid; grid-template-columns: 240px minmax(0, 1fr); height: 100vh; }
+  aside { background: var(--panel); border-right: 1px solid var(--line); display: flex; flex-direction: column; min-width: 0; }
+  .brand { padding: 16px 16px 10px; font-weight: 650; display: flex; align-items: center; gap: 8px; }
+  .mac-desktop .brand { padding-top: 40px; -webkit-app-region: drag; user-select: none; }
+  .mac-desktop .wrap { padding-top: 34px; }
+  .search { margin: 0 12px 10px; position: relative; display: block; }
+  .search svg { position: absolute; left: 10px; top: 11px; color: var(--faint); }
+  .search input { padding-left: 32px; }
+  .apps { flex: 1; overflow: auto; padding: 0 8px; }
+  .nav { display: flex; align-items: center; gap: 10px; width: 100%; padding: 8px 10px; border-radius: 8px; text-align: left; }
+  .nav:hover { background: var(--hover); }
+  .nav.on { background: var(--accent-soft); }
+  .nav .name { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nav .n { color: var(--faint); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .dot { width: 10px; height: 10px; border-radius: 3px; flex: none; display: inline-block; }
+  .bottom { border-top: 1px solid var(--line); padding: 8px; display: grid; gap: 2px; }
+  .bottom .nav { color: var(--muted); }
+
+  main { overflow: auto; min-width: 0; }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 24px 28px 80px; }
+  h1 { font-size: 22px; margin: 0 0 4px; font-weight: 650; display: flex; align-items: center; gap: 10px; }
+  .lead { color: var(--muted); margin: 0 0 22px; }
+  .group { margin-bottom: 26px; }
+  .ghead { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+  .ghead b { font-size: 13px; white-space: nowrap; }
+  .ghead span { color: var(--faint); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .ghead .sp { flex: 1; }
+  .link { color: var(--accent); font-size: 13px; white-space: nowrap; }
+  .list { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+  .row { display: flex; align-items: center; gap: 12px; padding: 9px 8px 9px 14px; border-top: 1px solid var(--line); cursor: pointer; }
+  .row:first-child { border-top: 0; }
+  .row:hover { background: var(--hover); }
+  .row .txt { flex: 1; min-width: 0; }
+  .row .t { font-weight: 550; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row .p { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .row.empty .t { color: var(--muted); font-weight: 450; }
+  .row .meta { color: var(--faint); font-size: 12px; white-space: nowrap; }
+  .del { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; color: var(--faint); flex: none; }
+  .del:hover { background: var(--danger-soft); color: var(--danger); }
+  .more { display: block; width: 100%; padding: 10px; color: var(--accent); font-size: 13px; border-top: 1px solid var(--line); }
+  .blank { text-align: center; color: var(--muted); padding: 60px 20px; }
+
+  .btn { border: 1px solid var(--line2); background: var(--panel); border-radius: 8px; padding: 7px 14px; white-space: nowrap; }
+  .btn:hover { background: var(--hover); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.red { color: var(--danger); }
+  .btn.red:hover { background: var(--danger-soft); }
+  .btn:disabled { opacity: .45; cursor: default; }
+
+  .scrim { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; padding: 20px; z-index: 10; }
+  .card { background: var(--bg); border-radius: 14px; width: min(760px, 100%); max-height: 100%; display: flex; flex-direction: column; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+  .card header { padding: 16px 20px 6px; }
+  .card header h2 { margin: 0; font-size: 17px; }
+  .card header div { color: var(--muted); font-size: 13px; }
+  .card .bd { padding: 12px 20px; overflow: auto; flex: 1; display: grid; gap: 12px; align-content: start; }
+  .card textarea { min-height: 46vh; font: 13px/1.6 var(--mono); resize: vertical; }
+  .card footer { padding: 12px 20px 16px; display: flex; gap: 8px; align-items: center; }
+  .sp { flex: 1; }
+  .set h3 { margin: 4px 0 2px; font-size: 14px; }
+  .set p { margin: 0 0 8px; color: var(--muted); font-size: 13px; }
+  .set hr { border: 0; border-top: 1px solid var(--line); margin: 4px 0; }
+  .line { display: flex; gap: 8px; align-items: center; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .chip { border: 1px solid var(--line2); border-radius: 20px; padding: 3px 11px; font-size: 13px; }
+  .chip:hover { background: var(--hover); }
+  .toggle { display: flex; gap: 8px; align-items: center; padding: 5px 0; }
+  .toggle input { width: auto; }
+  .mono { font: 12px var(--mono); word-break: break-all; color: var(--muted); }
+  .status { font-size: 13px; color: var(--muted); }
+  .status.bad { color: var(--warn); }
+  summary { cursor: pointer; }
+
+  .toast { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 14px 10px 16px; border-radius: 10px; display: flex; gap: 16px; align-items: center; z-index: 20; max-width: calc(100vw - 32px); box-shadow: 0 8px 30px rgba(0,0,0,.25); }
+  .toast button { color: #5b95ff; font-weight: 650; }
+  .toast.err { background: var(--danger); color: #fff; }
+
+  @media (max-width: 760px) {
+    .app { grid-template-columns: 1fr; grid-template-rows: auto 1fr; height: 100dvh; }
+    aside { border-right: 0; border-bottom: 1px solid var(--line); }
+    .brand { padding: 12px 16px 8px; }
+    .apps { display: flex; gap: 6px; overflow-x: auto; padding: 0 12px 8px; flex: none; }
+    .apps .nav, .bottom .nav { width: auto; flex: none; padding: 6px 12px; border: 1px solid var(--line); border-radius: 20px; }
+    .bottom { display: flex; border-top: 0; padding: 0 12px 10px; gap: 6px; }
+    .wrap { padding: 18px 16px 80px; }
+    .row .meta { display: none; }
+    .scrim { padding: 0; align-items: stretch; }
+    .card { border-radius: 0; height: 100%; width: 100%; }
+    .del { width: 40px; height: 40px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand"><img src="/icon.svg" alt="" width="22" height="22">Forget-Me-Not</div>
+    <label class="search"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="5"/><path d="m11 11 3.5 3.5"/></svg><input id="q" type="search" placeholder="Search everything" autocomplete="off"></label>
+    <div class="apps" id="apps"></div>
+    <div class="bottom">
+      <button class="nav" id="nav-deleted"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4"/></svg><span class="name">Deleted</span><span class="n" id="n-deleted"></span></button>
+      <button class="nav" id="nav-settings"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.2"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M3.4 12.6l1.4-1.4M11.2 4.8l1.4-1.4"/></svg><span class="name">Settings</span><span class="n" id="n-sync"></span></button>
+    </div>
+  </aside>
+  <main id="main"><div class="blank">Loading…</div></main>
+</div>
+<div id="layer"></div>
+<script nonce="__NONCE__">
+const TOKEN = '__TOKEN__';
+const REMOTE = '__REMOTE__' === '1';
+if (/desktop=1/.test(location.search) && /Mac/.test(navigator.userAgent)) document.documentElement.classList.add('mac-desktop');
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const ago = (ms) => { if (!ms) return ''; const d = (Date.now() - ms) / 1000; if (d < 60) return 'just now'; if (d < 3600) return `${Math.floor(d / 60)} min ago`; if (d < 86400) return `${Math.floor(d / 3600)} h ago`; if (d < 86400 * 30) return `${Math.floor(d / 86400)} d ago`; return new Date(ms).toLocaleDateString(); };
+let HOME_DIR = '';
+const short = (p) => { p = String(p ?? ''); return HOME_DIR && (p === HOME_DIR || p.startsWith(HOME_DIR + '/') || p.startsWith(HOME_DIR + '\\')) ? '~' + p.slice(HOME_DIR.length) : p; };
+const TRASH_ICON = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2.5 4h11M6 4V2.5h4V4M4 4l.7 9.5h6.6L12 4"/></svg>';
+
+async function api(method, route, body) {
+  const r = await fetch(`/api/${route}`, { method, headers: { 'x-fmn-token': TOKEN, ...(body ? { 'content-type': 'application/json' } : {}) }, body: body ? JSON.stringify(body) : undefined });
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.error || `Something went wrong (${r.status})`);
+  return d;
+}
+let toastTimer;
+function toast(msg, { undo, err } = {}) {
+  $('.toast')?.remove(); clearTimeout(toastTimer);
+  const t = document.createElement('div'); t.className = 'toast' + (err ? ' err' : '');
+  t.innerHTML = `<span>${esc(msg)}</span>${undo ? '<button>Undo</button>' : ''}`;
+  if (undo) t.querySelector('button').onclick = async () => { t.remove(); await undo(); };
+  document.body.appendChild(t); toastTimer = setTimeout(() => t.remove(), undo ? 7000 : err ? 5000 : 2500);
+}
+const fail = (e) => toast(e.message, { err: true });
+/** Run a page action and show any error instead of failing silently. */
+const safely = (fn) => (...args) => fn(...args).catch(fail);
+
+const S = { view: null, apps: [], open: {} };
+// Every screen change takes a ticket; a screen that finishes loading after a newer one was asked for is dropped.
+let ticket = 0;
+const newScreen = () => { const mine = ++ticket; return () => mine === ticket; };
+
+async function refreshNav() {
+  const d = await api('GET', 'apps'); S.apps = d.apps; HOME_DIR = d.home || HOME_DIR;
+  $('#apps').innerHTML = d.apps.map((a) => `<button class="nav ${S.view?.app === a.id ? 'on' : ''}" data-app="${a.id}"><span class="dot" style="background:${esc(a.color)}"></span><span class="name">${esc(a.name)}</span><span class="n">${a.count}</span></button>`).join('');
+  $$('[data-app]').forEach((b) => { b.onclick = () => safely(showApp)(b.dataset.app); });
+  $('#n-deleted').textContent = d.deleted || '';
+  $('#n-sync').textContent = d.sync.on ? (d.sync.problems || !d.sync.ok ? '!' : d.sync.last ? '✓' : '') : '';
+  $('#nav-deleted').classList.toggle('on', S.view?.kind === 'deleted');
+}
+
+// ── an app's memories ──────────────────────────────────────────────────────────────────────────────────────────
+function rowHtml(it, extra = '') {
+  if (!it.exists) return `<div class="row empty" data-item="${it.id}"><div class="txt"><div class="t">${esc(it.title)}</div><div class="p">Empty — click to write</div></div></div>`;
+  const delBtn = it.kind === 'index' ? '<span class="del"></span>' : `<button class="del" data-del="${it.id}" ${it.kind === 'remote' ? `data-online="${esc(it.app || S.appName || 'the service')}"` : ''} title="Delete" aria-label="Delete ${esc(it.title)}">${TRASH_ICON}</button>`;
+  return `<div class="row" data-item="${it.id}"><div class="txt"><div class="t">${esc(it.title)}</div><div class="p">${esc(it.preview || ' ')}</div></div>${extra}<span class="meta">${ago(it.mtime)}</span>${delBtn}</div>`;
+}
+function wireRows(root, reload) {
+  $$('[data-item]', root).forEach((r) => { r.onclick = () => safely(openItem)(r.dataset.item, reload); });
+  $$('[data-del]', root).forEach((b) => { b.onclick = (e) => { e.stopPropagation(); del(b.dataset.del, reload, b.dataset.online); }; });
+}
+async function del(id, reload, online) {
+  if (online && !confirm(`This deletes it on ${online}. It can't be undone from here (a copy of the text stays in Deleted).`)) return;
+  const row = document.querySelector(`[data-item="${CSS.escape(id)}"]`); if (row) row.style.display = 'none'; // feels instant
+  try {
+    const r = await api('DELETE', 'item', { id });
+    await reload(); refreshNav();
+    if (r.online) return toast(`Deleted on ${r.online}`);
+    toast(`Deleted “${r.label}”`, { undo: async () => { try { await api('POST', 'restore', { entry: r.entry }); await reload(); refreshNav(); toast('Restored'); } catch (e) { fail(e); } } });
+  } catch (e) { if (row) row.style.display = ''; fail(e); }
+}
+
+async function showApp(appId) {
+  const current = newScreen();
+  S.view = { kind: 'app', app: appId }; $('#q').value = '';
+  const a = await api('GET', `app?id=${encodeURIComponent(appId)}`);
+  if (!current()) return;
+  S.appName = a.name; refreshNav();
+  const LIMIT = 8;
+  const groups = a.groups.filter((g) => !g.temp || S.open.temp);
+  $('#main').innerHTML = `<div class="wrap"><h1><span class="dot" style="background:${esc(a.color)};width:14px;height:14px"></span>${esc(a.name)}</h1>
+    <p class="lead">${a.count} ${a.count === 1 ? 'memory' : 'memories'}. Click one to read or change it.</p>
+    ${groups.map((g) => {
+      const open = S.open[g.id]; const items = open ? g.items : g.items.slice(0, LIMIT);
+      return `<section class="group"><div class="ghead"><b>${esc(g.label)}</b><span>${g.scope === 'online' ? `online · ${esc(g.sub)}` : g.db ? esc(short(g.sub)) : g.scope === 'global' ? 'used in every project' : esc(short(g.sub))}</span><span class="sp"></span>${g.addDir ? `<button class="link" data-add="${esc(g.id)}">+ Add</button>` : ''}</div>
+        ${g.error ? `<p class="status bad" style="margin:0 0 6px">${esc(g.error)}</p>` : ''}<div class="list">${items.map((it) => rowHtml(it)).join('') || '<div class="row empty"><div class="txt"><div class="t">Nothing yet</div></div></div>'}
+        ${g.items.length > LIMIT ? `<button class="more" data-more="${esc(g.id)}">${open ? 'Show less' : `Show all ${g.items.length}`}</button>` : ''}</div></section>`;
+    }).join('')}
+    ${a.groups.some((g) => g.temp) ? `<button class="link" id="temp">${S.open.temp ? 'Hide' : 'Show'} temporary folders</button>` : ''}</div>`;
+  const reload = () => showApp(appId).catch(fail);
+  wireRows($('#main'), reload);
+  $$('[data-more]').forEach((b) => { b.onclick = () => { S.open[b.dataset.more] = !S.open[b.dataset.more]; reload(); }; });
+  $$('[data-add]').forEach((b) => { b.onclick = () => addItem(b.dataset.add, a.groups.find((g) => g.id === b.dataset.add), reload); });
+  if ($('#temp')) $('#temp').onclick = () => { S.open.temp = !S.open.temp; reload(); };
+}
+
+// ── open / edit / add ──────────────────────────────────────────────────────────────────────────────────────────
+let dirty = false;
+function modal(html) {
+  $('#layer').innerHTML = `<div class="scrim"><div class="card">${html}</div></div>`;
+  $('.scrim').onclick = (e) => { if (e.target.classList.contains('scrim')) tryClose(); };
+  return () => { dirty = false; $('#layer').innerHTML = ''; };
+}
+function tryClose() { if (dirty && !confirm('Discard your changes?')) return; dirty = false; $('#layer').innerHTML = ''; }
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && $('#layer').innerHTML) tryClose(); });
+
+async function openItem(id, reload) {
+  let d; try { d = await api('GET', `item?id=${encodeURIComponent(id)}`); } catch (e) { return fail(e); }
+  const close = modal(`<header><h2>${esc(d.title)}</h2><div>${esc(d.app)} · ${esc(d.where)}${d.online ? ' · saves online' : ''}</div></header>
+    <div class="bd"><textarea id="ed" spellcheck="false" placeholder="${d.missing ? 'Write what this app should always remember…' : ''}">${esc(d.content)}</textarea>${d.hint ? `<div class="status">${esc(d.hint)}</div>` : ''}</div>
+    <footer>${d.missing || d.kind === 'index' ? '' : '<button class="btn red" id="m-del">Delete</button>'}<span class="sp"></span><button class="btn" id="m-cancel">Cancel</button><button class="btn primary" id="m-save" disabled>Save</button></footer>`);
+  const ta = $('#ed'); dirty = false;
+  const save = async () => { if (!dirty) return; try { await api('PUT', 'item', { id, content: ta.value, expectedMtime: d.mtime || undefined }); close(); toast('Saved'); reload(); refreshNav(); } catch (e) { fail(e); } };
+  ta.oninput = () => { dirty = ta.value !== d.content; $('#m-save').disabled = !dirty; };
+  ta.onkeydown = (e) => { if ((e.metaKey || e.ctrlKey) && e.key === 's') { e.preventDefault(); save(); } };
+  $('#m-save').onclick = save;
+  $('#m-cancel').onclick = tryClose;
+  if ($('#m-del')) $('#m-del').onclick = () => { if (d.online && !confirm(`This deletes it on ${d.online}. It can't be undone from here.`)) return; close(); del(id, reload); };
+  ta.setSelectionRange(0, 0); ta.focus(); ta.scrollTop = 0;
+}
+
+function addItem(groupId, g, reload) {
+  const close = modal(`<header><h2>New memory</h2><div>${esc(g.label)}</div></header>
+    <div class="bd"><input id="n-title" placeholder="Title — e.g. “I prefer short answers”"><textarea id="n-body" style="min-height:28vh" placeholder="Details (optional)"></textarea></div>
+    <footer><span class="sp"></span><button class="btn" id="n-cancel">Cancel</button><button class="btn primary" id="n-save">Add</button></footer>`);
+  $('#n-title').focus();
+  $('#n-cancel').onclick = close;
+  $('#n-save').onclick = async () => { try { await api('POST', 'item', { groupId, title: $('#n-title').value, body: $('#n-body').value }); close(); toast('Added'); reload(); refreshNav(); } catch (e) { fail(e); } };
+}
+
+// ── search ─────────────────────────────────────────────────────────────────────────────────────────────────────
+let qTimer;
+$('#q').oninput = () => { clearTimeout(qTimer); qTimer = setTimeout(safely(runSearch), 200); };
+async function runSearch() {
+  const q = $('#q').value.trim();
+  if (!q) return S.view?.kind === 'app' ? showApp(S.view.app) : home();
+  const current = newScreen();
+  S.view = { kind: 'search' }; refreshNav();
+  const res = await api('GET', `search?q=${encodeURIComponent(q)}`);
+  if (!current()) return;
+  $('#main').innerHTML = `<div class="wrap"><h1>“${esc(q)}”</h1><p class="lead">${res.length} found${res.length >= 200 ? ' (showing 200)' : ''}</p>
+    ${res.length ? `<div class="list">${res.map((it) => rowHtml(it, `<span class="meta" style="display:flex;gap:6px;align-items:center"><span class="dot" style="background:${esc(it.color)}"></span>${esc(it.app)}</span>`)).join('')}</div>` : '<div class="blank">Nothing matches.</div>'}</div>`;
+  wireRows($('#main'), () => runSearch().catch(fail));
+}
+
+// ── deleted ────────────────────────────────────────────────────────────────────────────────────────────────────
+$('#nav-deleted').onclick = safely(showDeleted);
+async function showDeleted() {
+  const current = newScreen();
+  S.view = { kind: 'deleted' }; $('#q').value = ''; refreshNav();
+  const list = await api('GET', 'deleted');
+  if (!current()) return;
+  const what = (t) => t.kind === 'edit' || t.kind === 'row-edit' ? 'earlier version' : t.kind === 'sync' ? 'replaced by sync' : t.kind === 'remote' ? esc(t.reason) : 'deleted';
+  $('#main').innerHTML = `<div class="wrap"><h1>Deleted</h1><p class="lead">What you delete, and earlier versions of what you change. Bring anything back with Restore.</p>
+    ${list.length ? `<div class="list">${list.map((t) => `<div class="row" style="cursor:default"><div class="txt"><div class="t">${esc(t.label || t.file)}</div><div class="p">${what(t)}${t.kind === 'remote' ? '' : ` · ${esc(short(t.original))}`}</div></div><span class="meta">${ago(t.at)}</span>${t.kind === 'remote' ? `<button class="btn" data-copytext="${esc(t.entry)}">Copy text</button>` : `<button class="btn" data-restore="${esc(t.entry)}">Restore</button>`}</div>`).join('')}</div>` : '<div class="blank">Nothing here.</div>'}</div>`;
+  $$('[data-restore]').forEach((b) => { b.onclick = safely(async () => { const r = await api('POST', 'restore', { entry: b.dataset.restore }); toast(`Restored “${r.restored}”`); await showDeleted(); refreshNav(); }); });
+  $$('[data-copytext]').forEach((b) => { b.onclick = safely(async () => { const { text } = await api('GET', `deleted/text?entry=${encodeURIComponent(b.dataset.copytext)}`); try { await navigator.clipboard.writeText(text); toast('Copied'); } catch { prompt('Copy this:', text); } }); });
+}
+
+// ── settings ───────────────────────────────────────────────────────────────────────────────────────────────────
+$('#nav-settings').onclick = safely(showSettings);
+async function showSettings() {
+  let s; try { s = await api('GET', 'settings'); } catch (e) { return fail(e); }
+  const L = s.lastSync;
+  const status = !s.syncDir ? '' : !s.ok ? '<span class="status bad">Folder not found</span>' : s.syncing ? '<span class="status">Syncing…</span>'
+    : L ? `<span class="status ${L.problems?.length ? 'bad' : ''}">Synced ${ago(L.at)}${L.problems?.length ? ` — ${esc(L.problems[0])}` : ''}</span>` : '<span class="status">Not synced yet</span>';
+  modal(`<header><h2>Settings</h2></header><div class="bd set">
+    <section><h3>Sync across your computers</h3><p>Pick a folder that iCloud, Dropbox, OneDrive or Google Drive already syncs. Do the same on each computer.</p>
+      <div class="line"><input id="s-dir" placeholder="Folder path" value="${esc(s.syncDir)}" ${REMOTE ? 'disabled' : ''}><button class="btn" id="s-dir-save" ${REMOTE ? 'disabled' : ''}>Use</button></div>
+      ${!REMOTE && s.candidates.length ? `<div class="chips">${s.candidates.map((c, i) => `<button class="chip" data-cand="${i}">${esc(c.label)}</button>`).join('')}</div>` : ''}
+      ${s.syncDir ? `<div class="line" style="margin-top:10px"><button class="btn primary" id="s-sync" ${s.ok ? '' : 'disabled'}>Sync now</button>${L?.needsForce ? '<button class="btn red" id="s-force">Sync anyway</button>' : ''}${status}</div>
+        ${L?.conflicts?.length ? `<p style="margin-top:6px">${L.conflicts.length} changed on two computers at once — the newer one was kept, the other is in Deleted.</p>` : ''}
+        <details style="margin-top:10px"><summary class="status">Claude Code projects to sync (${s.projects.filter((p) => p.on).length} of ${s.projects.length})</summary>
+          ${s.projects.map((p) => `<label class="toggle"><input type="checkbox" data-proj="${esc(p.id)}" data-key="${esc(p.key)}" ${p.on ? 'checked' : ''}> ${esc(p.name)} <span class="status">${p.count} · ${esc(short(p.folder))}</span></label>`).join('')}
+          <p style="margin-top:6px">Every app's “Everywhere” memories always sync.</p></details>
+        ${s.elsewhere.length ? `<details open style="margin-top:6px"><summary class="status">From your other computers</summary>${s.elsewhere.map((k) => `<div class="line" style="margin-top:6px"><span style="min-width:110px">${esc(k)}</span><input data-efolder="${esc(k)}" placeholder="Its folder on this computer"><button class="btn" data-elink="${esc(k)}">Link</button></div>`).join('')}</details>` : ''}
+        ${s.devices.length > 1 ? `<p style="margin-top:8px">Computers: ${s.devices.map((d) => esc(d.name)).join(', ')}</p>` : ''}` : ''}
+    </section>
+    <hr>
+    <section><h3>Use on your phone</h3>
+      ${REMOTE ? '<p>You’re on your phone now — this is managed on the computer.</p>' : `<label class="toggle"><input type="checkbox" id="s-lan" ${s.lan.enabled ? 'checked' : ''}> Let my phone open this (same Wi-Fi)</label>
+      ${s.lan.enabled ? `${s.lan.addresses.map((a) => { const u = `http://${a.address}:${s.lan.port}/?key=${s.lan.key}`; return `<div class="line" style="margin-top:6px"><span class="mono" style="flex:1">${esc(u)}</span><button class="btn" data-copy="${esc(u)}">Copy</button></div>`; }).join('') || '<p>Not connected to a network.</p>'}
+        <p style="margin-top:6px">Open this link on your phone. Keep it private — it works like a password.</p>` : ''}`}
+    </section>
+    <hr>
+    <section><h3>Online memory services</h3><p>Connect with your own API key.</p>
+      ${s.connections.map((c) => `<div class="line" style="margin-bottom:6px"><span style="flex:1">${esc(c.name)} <span class="status ${c.error ? 'bad' : ''}">${c.error ? esc(c.error) : `${c.count} memories`}${c.url ? ` · ${esc(c.url)}` : ''}</span></span><button class="btn" data-unconn="${esc(c.id)}">Disconnect</button></div>`).join('')}
+      ${REMOTE ? '' : `<div class="chips">${s.services.map((v) => `<button class="chip" data-svc="${v.id}">+ ${esc(v.name)}</button>`).join('')}</div><div id="svc-form"></div>`}
+    </section>
+    <hr>
+    ${REMOTE ? '' : `<section><h3>Add another memory source</h3><p>Any folder or file an app keeps memory in.</p>
+      ${s.custom.map((c, i) => `<div class="line" style="margin-bottom:6px"><span style="flex:1">${esc(c.name)} <span class="status">${esc(short(c.path))}</span></span><button class="btn" data-unsrc="${i}">Remove</button></div>`).join('')}
+      <div class="line"><input id="src-path" placeholder="e.g. ~/Notes/ai-memory"><input id="src-name" placeholder="Name" style="max-width:150px"><button class="btn" id="src-add">Add</button></div>
+    </section>
+    <hr>
+    <section><h3>This computer's name</h3><div class="line"><input id="s-name" value="${esc(s.deviceName)}"><button class="btn" id="s-name-save">Save</button></div></section>`}
+  </div><footer><span class="sp"></span><button class="btn primary" id="s-close">Done</button></footer>`);
+  const set = async (b, msg) => { try { await api('POST', 'settings', b); if (msg) toast(msg); } catch (e) { fail(e); } showSettings().catch(fail); refreshNav().catch(fail); };
+  $('#s-close').onclick = () => { $('#layer').innerHTML = ''; if (S.view?.app) safely(showApp)(S.view.app); };
+  if ($('#s-dir-save')) $('#s-dir-save').onclick = () => set({ syncDir: $('#s-dir').value }, 'Sync folder set');
+  $$('[data-cand]').forEach((c) => { c.onclick = () => set({ syncDir: s.candidates[+c.dataset.cand].path }, `Using ${s.candidates[+c.dataset.cand].label}`); });
+  const sync = async (force) => { const b = $('#s-sync'); b.disabled = true; b.textContent = 'Syncing…'; try { const r = await api('POST', 'sync', { force }); toast(r.needsForce ? 'Held back — see Settings' : `Synced · ${r.changes} change${r.changes === 1 ? '' : 's'}`); } catch (e) { fail(e); } showSettings().catch(fail); refreshNav().catch(fail); };
+  if ($('#s-sync')) $('#s-sync').onclick = () => sync(false);
+  if ($('#s-force')) $('#s-force').onclick = () => { if (confirm('This deletes a lot of memories on the other side. Anything removed here is kept in Deleted. Go ahead?')) sync(true); };
+  $$('[data-proj]').forEach((c) => { c.onchange = () => set({ project: { id: c.dataset.proj, on: c.checked, key: c.dataset.key } }); });
+  $$('[data-elink]').forEach((b) => { b.onclick = () => set({ linkElsewhere: { key: b.dataset.elink, folder: $(`[data-efolder="${CSS.escape(b.dataset.elink)}"]`).value } }, 'Linked — it arrives on the next sync'); });
+  if ($('#s-lan')) $('#s-lan').onchange = (e) => set({ lanEnabled: e.target.checked });
+  $$('[data-copy]').forEach((b) => { b.onclick = async () => { try { await navigator.clipboard.writeText(b.dataset.copy); toast('Copied'); } catch { prompt('Copy this link:', b.dataset.copy); } }; });
+  if ($('#src-add')) $('#src-add').onclick = () => set({ addSource: { path: $('#src-path').value, name: $('#src-name').value } }, 'Added');
+  $$('[data-unsrc]').forEach((b) => { b.onclick = () => set({ removeSource: +b.dataset.unsrc }, 'Removed (its files are untouched)'); });
+  if ($('#s-name-save')) $('#s-name-save').onclick = () => set({ deviceName: $('#s-name').value }, 'Saved');
+  $$('[data-unconn]').forEach((b) => { b.onclick = () => set({ disconnect: b.dataset.unconn }, 'Disconnected (nothing was deleted online)'); });
+  $$('[data-svc]').forEach((b) => { b.onclick = () => {
+    const v = s.services.find((x) => x.id === b.dataset.svc);
+    $('#svc-form').innerHTML = `<div style="display:grid;gap:6px;margin-top:8px">${v.fields.map((f) => `<input data-f="${f.key}" type="${f.secret ? 'password' : 'text'}" placeholder="${esc(f.label)}" autocomplete="off">`).join('')}
+      <div class="line"><span class="sp"></span><button class="btn primary" id="svc-go">Connect ${esc(v.name)}</button></div></div>`;
+    $('#svc-form [data-f]').focus();
+    $('#svc-go').onclick = async () => {
+      const body = { service: v.id }; $$('#svc-form [data-f]').forEach((i) => { body[i.dataset.f] = i.value; });
+      $('#svc-go').disabled = true; $('#svc-go').textContent = 'Checking…';
+      set({ connect: body }, `${v.name} connected`);
+    };
+  }; });
+}
+
+// ── start ──────────────────────────────────────────────────────────────────────────────────────────────────────
+async function home() { await refreshNav(); if (S.apps[0]) showApp(S.apps[0].id); else $('#main').innerHTML = '<div class="blank">No AI memory found on this computer yet.</div>'; }
+home().catch(fail);
+setInterval(() => refreshNav().catch(() => {}), 30000);
+</script>
+</body>
+</html>

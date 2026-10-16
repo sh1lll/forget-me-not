@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e2a4a"/><stop offset="1" stop-color="#101729"/></linearGradient>
+    <radialGradient id="petal" cx="0.5" cy="0.75" r="0.8"><stop offset="0" stop-color="#9cc3ff"/><stop offset="0.55" stop-color="#5b8def"/><stop offset="1" stop-color="#3d63d6"/></radialGradient>
+    <radialGradient id="eye" cx="0.5" cy="0.45" r="0.6"><stop offset="0" stop-color="#fff6c2"/><stop offset="0.6" stop-color="#ffd23f"/><stop offset="1" stop-color="#f5a623"/></radialGradient>
+  </defs>
+  <rect x="64" y="64" width="896" height="896" rx="200" fill="url(#bg)"/>
+  <g transform="translate(512 512)">
+    <g id="p"><ellipse cx="0" cy="-185" rx="150" ry="165" fill="url(#petal)"/></g>
+    <use href="#p" transform="rotate(72)"/><use href="#p" transform="rotate(144)"/><use href="#p" transform="rotate(216)"/><use href="#p" transform="rotate(288)"/>
+    <circle r="92" fill="#ffffff"/>
+    <circle r="70" fill="url(#eye)"/>
+  </g>
+</svg>

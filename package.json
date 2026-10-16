@@ -1,0 +1,116 @@
+{
+  "name": "forget-me-not",
+  "productName": "Forget-Me-Not",
+  "version": "1.0.0",
+  "description": "See, edit and delete what your AI tools remember — Claude Code, Codex, Cursor, Gemini CLI, Windsurf, Copilot and 30 more — on Mac, Windows, Linux and your phone.",
+  "license": "Apache-2.0",
+  "author": "sh1lll (https://github.com/sh1lll)",
+  "homepage": "https://github.com/sh1lll/forget-me-not#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sh1lll/forget-me-not.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sh1lll/forget-me-not/issues"
+  },
+  "type": "module",
+  "main": "electron/main.mjs",
+  "bin": {
+    "forget-me-not": "cli.mjs"
+  },
+  "files": [
+    "cli.mjs",
+    "server.mjs",
+    "index.html",
+    "lib/",
+    "assets/",
+    "LICENSE",
+    "README.md",
+    "NOTICE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "ai",
+    "memory",
+    "claude-code",
+    "codex",
+    "cursor",
+    "gemini-cli",
+    "windsurf",
+    "copilot",
+    "agents-md",
+    "mem0",
+    "letta",
+    "mcp"
+  ],
+  "scripts": {
+    "start": "node server.mjs --open",
+    "app": "electron .",
+    "test": "node test/sync.test.mjs && node test/all-sources.test.mjs",
+    "dist": "electron-builder --publish never",
+    "dist:mac": "electron-builder --mac --publish never",
+    "dist:win": "electron-builder --win --publish never",
+    "dist:linux": "electron-builder --linux --publish never"
+  },
+  "devDependencies": {
+    "electron": "44.5.1",
+    "electron-builder": "26.17.0"
+  },
+  "build": {
+    "appId": "app.forgetmenot.desktop",
+    "productName": "Forget-Me-Not",
+    "artifactName": "Forget-Me-Not-${version}-${os}-${arch}.${ext}",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "electron/**",
+      "server.mjs",
+      "index.html",
+      "lib/**",
+      "assets/**",
+      "build/icon.png",
+      "package.json"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ]
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": true,
+      "perMachine": false,
+      "createDesktopShortcut": true
+    },
+    "linux": {
+      "category": "Utility",
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "maintainer": "sh1lll <204292842+sh1lll@users.noreply.github.com>"
+    },
+    "copyright": "Copyright © 2026 sh1lll"
+  }
+}
